@@ -23,5 +23,22 @@ namespace Shop.Repositories
         {
             return products.FirstOrDefault(product => product.Id == id);
         }
+
+        public void CreateProduct(Product newProduct)
+        {
+            products.Add(newProduct);
+        }
+
+        public void UpdateProduct(Product updatedProduct)
+        {
+            var index = products.FindIndex(existingProd => existingProd.Id == updatedProduct.Id);
+            products[index] = updatedProduct;
+        }
+
+        public void DeleteProduct(Guid id)
+        {
+            var index = products.FindIndex(existingProd => existingProd.Id == id);
+            products.RemoveAt(index);
+        }
     }
 }

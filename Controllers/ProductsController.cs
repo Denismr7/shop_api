@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shop.Dtos;
 using Shop.Repositories;
 using System.Linq;
+using Shop.Entities;
 
 namespace Shop.Controllers
 {
@@ -33,6 +34,57 @@ namespace Shop.Controllers
             }
 
             return product.AsDto();
+        }
+
+        [HttpPost]
+        public ActionResult CreateProduct(CreateProductDTO productDTO)
+        {
+            Product product = new()
+            {
+                Id = Guid.NewGuid(),
+                Name = productDTO.Name,
+                Price = productDTO.Price,
+                Description = productDTO.Description,
+            };
+
+            repository.CreateProduct(product);
+
+            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product.AsDto());
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult UpdateProduct(Guid id, UpdateProductDTO productDTO)
+        {
+            var existingProduct = repository.GetProduct(id);
+            if (existingProduct is null)
+            {
+                return NotFound();
+            }
+
+            var updatedProduct = existingProduct with
+            {
+                Name = productDTO.Name,
+                Price = productDTO.Price,
+                Description = productDTO.Description,
+            };
+
+            repository.UpdateProduct(updatedProduct);
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id")]
+        public ActionResult DeleteProduct(Guid id)
+        {
+            var existingProduct = repository.GetProduct(id);
+            if (existingProduct is null)
+            {
+                return NotFound();
+            }
+
+            repository.DeleteProduct(id);
+
+            return NoContent();
         }
     }
 }
