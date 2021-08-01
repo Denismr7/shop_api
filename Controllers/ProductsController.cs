@@ -73,7 +73,7 @@ namespace Shop.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id")]
+        [HttpDelete("{id}")]
         public ActionResult DeleteProduct(Guid id)
         {
             var existingProduct = repository.GetProduct(id);
