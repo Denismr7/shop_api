@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Shop.Entities;
@@ -19,32 +20,32 @@ namespace Shop.Repositories
         }
 
         
-        public void CreateProduct(Product newProduct)
+        public async Task CreateProductAsync(Product newProduct)
         {
-            productsCollection.InsertOne(newProduct);
+            await productsCollection.InsertOneAsync(newProduct);
         }
 
-        public void DeleteProduct(Guid id)
-        {
-            var filter = filterBuilder.Eq(product => product.Id, id);
-            productsCollection.DeleteOne(filter);
-        }
-
-        public Product GetProduct(Guid id)
+        public async Task DeleteProductAsync(Guid id)
         {
             var filter = filterBuilder.Eq(product => product.Id, id);
-            return productsCollection.Find(filter).FirstOrDefault();
+            await productsCollection.DeleteOneAsync(filter);
         }
 
-        public IEnumerable<Product> GetProducts()
+        public async Task<Product> GetProductAsync(Guid id)
         {
-            return productsCollection.Find(new BsonDocument()).ToList();
+            var filter = filterBuilder.Eq(product => product.Id, id);
+            return await productsCollection.Find(filter).FirstOrDefaultAsync();
         }
 
-        public void UpdateProduct(Product updatedProduct)
+        public async Task<IEnumerable<Product>> GetProductsAsync()
+        {
+            return await productsCollection.Find(new BsonDocument()).ToListAsync();
+        }
+
+        public async Task UpdateProductAsync(Product updatedProduct)
         {
             var filter = filterBuilder.Eq(product => product.Id, updatedProduct.Id);
-            productsCollection.ReplaceOne(filter, updatedProduct);
+            await productsCollection.ReplaceOneAsync(filter, updatedProduct);
         }
     }
 }

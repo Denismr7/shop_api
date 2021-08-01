@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Shop.Entities;
+using System.Threading.Tasks;
 
 namespace Shop.Repositories
 {
@@ -14,31 +15,34 @@ namespace Shop.Repositories
             new Product { Id = Guid.NewGuid(), Name = "Spinach", Price = (decimal)2.50, Description = "High in Vitamin A and Iron" },
         };
 
-        public IEnumerable<Product> GetProducts()
+        public async Task<IEnumerable<Product>> GetProductsAsync()
         {
-            return products;
+            return await Task.FromResult(products);
         }
 
-        public Product GetProduct(Guid id)
+        public async Task<Product> GetProductAsync(Guid id)
         {
-            return products.FirstOrDefault(product => product.Id == id);
+            return await Task.FromResult(products.FirstOrDefault(product => product.Id == id));
         }
 
-        public void CreateProduct(Product newProduct)
+        public async Task CreateProductAsync(Product newProduct)
         {
             products.Add(newProduct);
+            await Task.CompletedTask;
         }
 
-        public void UpdateProduct(Product updatedProduct)
+        public async Task UpdateProductAsync(Product updatedProduct)
         {
             var index = products.FindIndex(existingProd => existingProd.Id == updatedProduct.Id);
             products[index] = updatedProduct;
+            await Task.CompletedTask;
         }
 
-        public void DeleteProduct(Guid id)
+        public async Task DeleteProductAsync(Guid id)
         {
             var index = products.FindIndex(existingProd => existingProd.Id == id);
             products.RemoveAt(index);
+            await Task.CompletedTask;
         }
     }
 }

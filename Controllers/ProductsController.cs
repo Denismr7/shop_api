@@ -5,6 +5,7 @@ using Shop.Dtos;
 using Shop.Repositories;
 using System.Linq;
 using Shop.Entities;
+using System.Threading.Tasks;
 
 namespace Shop.Controllers
 {
@@ -18,16 +19,16 @@ namespace Shop.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<ProductDTO>> GetProducts()
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProductsAsync()
         {
-            var products = repository.GetProducts().Select(product => product.AsDto());
+            var products = (await repository.GetProductsAsync()).Select(product => product.AsDto());
             return Ok(products);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<ProductDTO> GetProduct(Guid id)
+        public async Task<ActionResult<ProductDTO>> GetProductAsync(Guid id)
         {
-            var product = repository.GetProduct(id);
+            var product = await repository.GetProductAsync(id);
             if (product is null)
             {
                 return NotFound();
@@ -37,7 +38,7 @@ namespace Shop.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateProduct(CreateProductDTO productDTO)
+        public async Task<ActionResult> CreateProductAsync(CreateProductDTO productDTO)
         {
             Product product = new()
             {
@@ -47,15 +48,15 @@ namespace Shop.Controllers
                 Description = productDTO.Description,
             };
 
-            repository.CreateProduct(product);
+            await repository.CreateProductAsync(product);
 
-            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product.AsDto());
+            return CreatedAtAction(nameof(CreateProductAsync), new { id = product.Id }, product.AsDto());
         }
 
         [HttpPut("{id}")]
-        public ActionResult UpdateProduct(Guid id, UpdateProductDTO productDTO)
+        public async Task<ActionResult> UpdateProduct(Guid id, UpdateProductDTO productDTO)
         {
-            var existingProduct = repository.GetProduct(id);
+            var existingProduct = await repository.GetProductAsync(id);
             if (existingProduct is null)
             {
                 return NotFound();
@@ -68,7 +69,7 @@ namespace Shop.Controllers
                 Description = productDTO.Description,
             };
 
-            repository.UpdateProduct(updatedProduct);
+            await repository.UpdateProductAsync(updatedProduct);
 
             return NoContent();
         }
@@ -76,13 +77,13 @@ namespace Shop.Controllers
         [HttpDelete("{id}")]
         public ActionResult DeleteProduct(Guid id)
         {
-            var existingProduct = repository.GetProduct(id);
+            var existingProduct = repository.GetProductAsync(id);
             if (existingProduct is null)
             {
                 return NotFound();
             }
 
-            repository.DeleteProduct(id);
+            repository.DeleteProductAsync(id);
 
             return NoContent();
         }
